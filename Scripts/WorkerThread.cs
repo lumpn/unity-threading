@@ -1,0 +1,122 @@
+﻿//----------------------------------------
+// MIT License
+// Copyright(c) 2019 Jonas Boetel
+//----------------------------------------
+using System.Collections.Generic;
+using System.Threading;
+using UnityEngine.Profiling;
+
+namespace Lumpn
+{
+    public sealed class WorkerThread : IThread
+    {
+        private readonly string group;
+        private readonly string name;
+        private readonly Thread thread;
+        private readonly Queue<Task> pendingTasks;
+
+        private bool waiting;
+        private bool canceled;
+
+        public ISynchronizationContext Context { get { return this; } }
+        public bool IsIdle { get { return waiting && QueueLength <= 0; } }
+        public int QueueLength { get { { return pendingTasks.Count; } } }
+
+        public static WorkerThread Start(string group, string name, ThreadPriority priority, int initialCapacity)
+        {
+            var worker = new WorkerThread(group, name, priority, initialCapacity);
+            worker.Start();
+            return worker;
+        }
+
+        private WorkerThread(string group, string name, ThreadPriority priority, int initialCapacity)
+        {
+            this.group = group;
+            this.name = name;
+            this.pendingTasks = new Queue<Task>(initialCapacity);
+            this.thread = new Thread(Main)
+            {
+                Name = name,
+                IsBackground = true,
+                Priority = priority
+            };
+        }
+
+        private void Start()
+        {
+            canceled = false;
+            thread.Start(this);
+        }
+
+        public void Stop()
+        {
+            lock (pendingTasks)
+            {
+                canceled = true;
+                Monitor.Pulse(pendingTasks);
+            }
+        }
+
+        public void Post(Task.Callback callback, object owner, object state)
+        {
+            lock (pendingTasks)
+            {
+                var pendingTask = new Task(callback, owner, state);
+                pendingTasks.Enqueue(pendingTask);
+                Monitor.Pulse(pendingTasks);
+            }
+        }
+
+        private bool TryDequeue(out Task task)
+        {
+            lock (pendingTasks)
+            {
+                while (!canceled && pendingTasks.Count <= 0)
+                {
+                    waiting = true;
+                    Monitor.Wait(pendingTasks);
+                    waiting = false;
+                }
+
+                if (!canceled)
+                {
+                    task = pendingTasks.Dequeue();
+                    return true;
+                }
+            }
+
+            task = default(Task);
+            return false;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}: {1}", group, name);
+        }
+
+        private void Run()
+        {
+            Task task;
+            while (TryDequeue(out task))
+            {
+                task.Execute();
+            }
+        }
+
+        private static void Main(object state)
+        {
+            try
+            {
+                var worker = (WorkerThread)state;
+
+                Profiler.BeginThreadProfiling(worker.group, worker.name);
+                worker.Run();
+                Profiler.EndThreadProfiling();
+            }
+            catch (System.Exception ex)
+            {
+                UnityEngine.Debug.LogException(ex);
+            }
+        }
+    }
+}

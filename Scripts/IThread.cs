@@ -6,11 +6,9 @@ namespace Lumpn
 {
     public interface IThread : ISynchronizationContext
     {
-        ISynchronizationContext Context { get; }
-
         bool IsIdle { get; }
-
         int QueueLength { get; }
+        ISynchronizationContext Context { get; }
 
         void Stop();
     }
