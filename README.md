@@ -1,5 +1,5 @@
 # unity-threads
-Non-allocating threading facilities for Unity
+Non-allocating thread switching facilities for Unity
 
 ## Installation
 Download the entire repository from https://github.com/lumpn/unity-threads and put it into a subdirectory of your Unity project's *Asset* directory.
@@ -18,10 +18,10 @@ void Start()
 IEnumerator Demo()
 {
     yield return workerThread.Context;
-    // ...
+    // on worker thread ...
     
     yield return unityThread.Context;
-    // ...
+    // on main thread ...
 }
 
 ```
