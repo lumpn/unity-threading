@@ -6,6 +6,6 @@ namespace Lumpn
 {
     public static class CoroutineUtils
     {
-        public static object waitForNextFrame = new object();
+        public static readonly object waitForNextFrame = new object();
     }
 }

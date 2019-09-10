@@ -24,7 +24,7 @@ namespace Lumpn
             this.canceled = false;
         }
 
-        private void Pump(int numTasks)
+        private void Run(int numTasks)
         {
             for (int i = 0; i < numTasks; i++)
             {
@@ -34,7 +34,7 @@ namespace Lumpn
             }
         }
 
-        public IEnumerator Pump()
+        public IEnumerator Run()
         {
             while (!canceled)
             {
@@ -46,7 +46,7 @@ namespace Lumpn
 
                 // explicitly only pump as many tasks as are queued right now
                 // because executing tasks can enqueue more tasks
-                Pump(num);
+                Run(num);
 
                 yield return CoroutineUtils.waitForNextFrame;
             }

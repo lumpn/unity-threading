@@ -18,9 +18,9 @@ namespace Lumpn
         private bool waiting;
         private bool canceled;
 
-        public ISynchronizationContext Context { get { return this; } }
         public bool IsIdle { get { return waiting && QueueLength <= 0; } }
         public int QueueLength { get { { return pendingTasks.Count; } } }
+        public ISynchronizationContext Context { get { return this; } }
 
         public static WorkerThread Start(string group, string name, ThreadPriority priority, int initialCapacity)
         {
