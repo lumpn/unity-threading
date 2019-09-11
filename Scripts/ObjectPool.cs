@@ -10,6 +10,8 @@ namespace Lumpn
     {
         private readonly Stack<T> pool;
 
+        public int Count { get { return pool.Count; } }
+
         public ObjectPool(int initialCapacity)
         {
             pool = new Stack<T>(initialCapacity);

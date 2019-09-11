@@ -19,8 +19,6 @@ public class SwitchContextDemo : MonoBehaviour
         thread2 = WorkerThread.Start("Demo", "Thread2", System.Threading.ThreadPriority.BelowNormal, 100);
         unity1 = ThreadUtils.StartUnityThread("Unity1", 100, this);
         unity2 = ThreadUtils.StartUnityThread("Unity2", 100, this);
-
-        thread1.StartCoroutine(TaskSwitch());
     }
 
     void OnDestroy()
@@ -31,7 +29,13 @@ public class SwitchContextDemo : MonoBehaviour
         thread1.Stop();
     }
 
-    IEnumerator TaskSwitch()
+    [ContextMenu("Start Coroutine")]
+    public void StartSwitchContextCoroutine()
+    {
+        thread1.StartCoroutine(SwitchContext());
+    }
+
+    IEnumerator SwitchContext()
     {
         yield return thread1.Context;
         Log("Read voxel data from file");
