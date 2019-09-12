@@ -22,14 +22,7 @@ namespace Lumpn
         public int QueueLength { get { { return pendingTasks.Count; } } }
         public ISynchronizationContext Context { get { return this; } }
 
-        public static WorkerThread Start(string group, string name, ThreadPriority priority, int initialCapacity)
-        {
-            var worker = new WorkerThread(group, name, priority, initialCapacity);
-            worker.Start();
-            return worker;
-        }
-
-        private WorkerThread(string group, string name, ThreadPriority priority, int initialCapacity)
+        public WorkerThread(string group, string name, ThreadPriority priority, int initialCapacity)
         {
             this.group = group;
             this.name = name;
@@ -42,7 +35,7 @@ namespace Lumpn
             };
         }
 
-        private void Start()
+        public void Start()
         {
             canceled = false;
             thread.Start(this);
