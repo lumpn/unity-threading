@@ -15,8 +15,8 @@ public class SwitchContextDemo : MonoBehaviour
     {
         Thread.CurrentThread.Name = "Unity";
 
-        thread1 = WorkerThread.Start("Demo", "Thread1", System.Threading.ThreadPriority.BelowNormal, 100);
-        thread2 = WorkerThread.Start("Demo", "Thread2", System.Threading.ThreadPriority.BelowNormal, 100);
+        thread1 = ThreadUtils.StartWorkerThread("Demo", "Thread1", System.Threading.ThreadPriority.BelowNormal, 100);
+        thread2 = ThreadUtils.StartWorkerThread("Demo", "Thread2", System.Threading.ThreadPriority.BelowNormal, 100);
         unity1 = ThreadUtils.StartUnityThread("Unity1", 100, this);
         unity2 = ThreadUtils.StartUnityThread("Unity2", 100, this);
     }
