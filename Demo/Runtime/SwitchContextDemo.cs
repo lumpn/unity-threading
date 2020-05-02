@@ -5,54 +5,56 @@
 using System.Collections;
 using System.Threading;
 using UnityEngine;
-using Lumpn;
 
-public class SwitchContextDemo : MonoBehaviour
+namespace Lumpn
 {
-    private IThread thread1, thread2, unity1, unity2;
-
-    void Start()
+    public class SwitchContextDemo : MonoBehaviour
     {
-        Thread.CurrentThread.Name = "Unity";
+        private IThread thread1, thread2, unity1, unity2;
 
-        thread1 = ThreadUtils.StartWorkerThread("Demo", "Thread1", System.Threading.ThreadPriority.BelowNormal, 100);
-        thread2 = ThreadUtils.StartWorkerThread("Demo", "Thread2", System.Threading.ThreadPriority.BelowNormal, 100);
-        unity1 = ThreadUtils.StartUnityThread("Unity1", 100, this);
-        unity2 = ThreadUtils.StartUnityThread("Unity2", 100, this);
-    }
+        void Start()
+        {
+            Thread.CurrentThread.Name = "Unity";
 
-    void OnDestroy()
-    {
-        unity2.Stop();
-        unity1.Stop();
-        thread2.Stop();
-        thread1.Stop();
-    }
+            thread1 = ThreadUtils.StartWorkerThread("Demo", "Thread1", System.Threading.ThreadPriority.BelowNormal, 100);
+            thread2 = ThreadUtils.StartWorkerThread("Demo", "Thread2", System.Threading.ThreadPriority.BelowNormal, 100);
+            unity1 = ThreadUtils.StartUnityThread("Unity1", 100, this);
+            unity2 = ThreadUtils.StartUnityThread("Unity2", 100, this);
+        }
 
-    [ContextMenu("Start Coroutine")]
-    public void StartSwitchContextCoroutine()
-    {
-        thread1.StartCoroutine(SwitchContext());
-    }
+        void OnDestroy()
+        {
+            unity2.Stop();
+            unity1.Stop();
+            thread2.Stop();
+            thread1.Stop();
+        }
 
-    IEnumerator SwitchContext()
-    {
-        yield return thread1.Context;
-        Log("Read voxel data from file");
+        [ContextMenu("Start Coroutine")]
+        public void StartSwitchContextCoroutine()
+        {
+            thread1.StartCoroutine(SwitchContext());
+        }
 
-        yield return unity1.Context;
-        Log("Create GameObject");
+        IEnumerator SwitchContext()
+        {
+            yield return thread1.Context;
+            Log("Read voxel data from file");
 
-        yield return thread2.Context;
-        Log("Compute mesh");
+            yield return unity1.Context;
+            Log("Create GameObject");
 
-        yield return unity2.Context;
-        Log("Upload mesh");
-    }
+            yield return thread2.Context;
+            Log("Compute mesh");
 
-    private static void Log(object msg)
-    {
-        var thread = Thread.CurrentThread;
-        Debug.LogFormat("Thread {0} ({1}): {2}", thread.ManagedThreadId, thread.Name, msg);
+            yield return unity2.Context;
+            Log("Upload mesh");
+        }
+
+        private static void Log(object msg)
+        {
+            var thread = Thread.CurrentThread;
+            Debug.LogFormat("Thread {0} ({1}): {2}", thread.ManagedThreadId, thread.Name, msg);
+        }
     }
 }
