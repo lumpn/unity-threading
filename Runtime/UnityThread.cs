@@ -5,7 +5,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     public sealed class UnityThread : IThread
     {
@@ -30,7 +30,7 @@ namespace Lumpn
             {
                 Task task;
                 if (!TryDequeue(out task)) return;
-                task.Execute();
+                task.Invoke();
             }
         }
 

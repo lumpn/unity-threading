@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     [TestFixture]
     public class CoroutineHandlerTest
@@ -32,7 +32,7 @@ namespace Lumpn
                 if (tasks.Count < 1) return false;
 
                 var task = tasks.Dequeue();
-                task.Execute();
+                task.Invoke();
                 return true;
             }
         }

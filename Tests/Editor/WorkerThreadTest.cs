@@ -5,7 +5,7 @@
 using System.Threading;
 using NUnit.Framework;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     [TestFixture]
     public sealed class WorkerThreadTest

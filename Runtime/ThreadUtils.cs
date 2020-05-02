@@ -5,7 +5,7 @@
 using UnityEngine;
 using ThreadPriority = System.Threading.ThreadPriority;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     public static class ThreadUtils
     {

@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     public sealed class CoroutineHandler : CustomYieldInstruction
     {

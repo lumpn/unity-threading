@@ -4,7 +4,7 @@
 //----------------------------------------
 using UnityEngine;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     public struct Task
     {
@@ -19,7 +19,7 @@ namespace Lumpn
             this.state = state;
         }
 
-        public void Execute()
+        public void Invoke()
         {
             try
             {

@@ -6,7 +6,7 @@ using System.Collections;
 using System.Threading;
 using UnityEngine;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     public class SwitchContextDemo : MonoBehaviour
     {

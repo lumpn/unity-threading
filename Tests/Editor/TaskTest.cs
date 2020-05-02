@@ -4,7 +4,7 @@
 //----------------------------------------
 using NUnit.Framework;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     [TestFixture]
     public sealed class TaskTest
@@ -17,10 +17,10 @@ namespace Lumpn
             var task = new Task(IncrementCounter, this, null);
             Assert.AreEqual(0, counter);
 
-            task.Execute();
+            task.Invoke();
             Assert.AreEqual(1, counter);
 
-            task.Execute();
+            task.Invoke();
             Assert.AreEqual(2, counter);
         }
 

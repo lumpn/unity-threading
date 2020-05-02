@@ -5,7 +5,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     public static class ThreadExtensions
     {

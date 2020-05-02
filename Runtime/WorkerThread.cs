@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine.Profiling;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     public sealed class WorkerThread : IThread
     {
@@ -92,7 +92,7 @@ namespace Lumpn
             Task task;
             while (TryDequeue(out task))
             {
-                task.Execute();
+                task.Invoke();
             }
         }
 

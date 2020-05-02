@@ -4,7 +4,7 @@
 //----------------------------------------
 using System.Collections.Generic;
 
-namespace Lumpn
+namespace Lumpn.Threading
 {
     public sealed class ObjectPool<T> where T : class
     {
