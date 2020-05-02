@@ -1,0 +1,15 @@
+{
+    "name": "de.lumpn.unity-threads.Demo",
+    "references": [
+        "GUID:daffcfbc5d71a5a4eb88169476f7cdb6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
