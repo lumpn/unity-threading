@@ -1,4 +1,4 @@
-﻿//----------------------------------------
+//----------------------------------------
 // MIT License
 // Copyright(c) 2019 Jonas Boetel
 //----------------------------------------
@@ -19,7 +19,7 @@ namespace Lumpn
             public int QueueLength { get { return tasks.Count; } }
             public ISynchronizationContext Context { get { return this; } }
 
-            public void Post(Task.Callback callback, object owner, object state)
+            public void Post(Callback callback, object owner, object state)
             {
                 var task = new Task(callback, owner, state);
                 tasks.Enqueue(task);

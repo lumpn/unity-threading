@@ -1,4 +1,4 @@
-﻿//----------------------------------------
+//----------------------------------------
 // MIT License
 // Copyright(c) 2019 Jonas Boetel
 //----------------------------------------
@@ -8,8 +8,6 @@ namespace Lumpn
 {
     public struct Task
     {
-        public delegate void Callback(object owner, object state);
-
         private readonly Callback callback;
         private readonly object owner;
         private readonly object state;

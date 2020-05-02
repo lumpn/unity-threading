@@ -1,4 +1,4 @@
-﻿//----------------------------------------
+//----------------------------------------
 // MIT License
 // Copyright(c) 2019 Jonas Boetel
 //----------------------------------------
@@ -50,7 +50,7 @@ namespace Lumpn
             }
         }
 
-        public void Post(Task.Callback callback, object owner, object state)
+        public void Post(Callback callback, object owner, object state)
         {
             lock (pendingTasks)
             {
