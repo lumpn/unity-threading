@@ -1,0 +1,14 @@
+{
+  "name": "de.lumpn.unity-threads",
+  "version": "0.1.0",
+  "displayName": "Package Example",
+  "description": "This is an example package",
+  "unity": "2017.1",
+ "keywords": [
+    "thread"
+  ],
+  "author": {
+    "name": "Jonas Boetel",
+    "url": "https://github.com/lumpn"
+  }
+}
