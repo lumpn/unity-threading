@@ -28,8 +28,6 @@ namespace Lumpn.Threading
 
         internal static void HandleYieldInstruction(YieldInstruction instruction, ISynchronizationContext context, CoroutineWrapper coroutineWrapper)
         {
-            Debug.LogFormat("Handling yield instruction {0}, context {1}", instruction, context);
-
             if (!unityThread.IsRunning)
             {
                 // our Unity thread is not running, which means that no
@@ -47,14 +45,11 @@ namespace Lumpn.Threading
 
             // TODO Jonas: use object pool for instruction wrappers
             var yieldWrapper = new YieldInstructionWrapper(instruction, context, coroutineWrapper);
-            Debug.LogFormat("Posting wrapper {0} to unity thread {1}", yieldWrapper, unityThread);
             unityThread.Post(HandleYieldInstructionImpl, instances, yieldWrapper);
         }
 
         private static void HandleYieldInstructionImpl(object owner, object state)
         {
-            Debug.LogFormat("HandleYieldInstructionImpl owner {0}, state {1}", owner, state);
-
             var hosts = (List<CoroutineHost>)owner;
             var wrapper = (YieldInstructionWrapper)state;
 
@@ -69,7 +64,6 @@ namespace Lumpn.Threading
                 return;
             }
 
-            Debug.LogFormat("HandleYieldInstructionImpl starting coroutine {0} on host {1}", wrapper, host);
             host.StartCoroutine(wrapper);
         }
 

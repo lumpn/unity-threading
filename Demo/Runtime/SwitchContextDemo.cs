@@ -86,7 +86,7 @@ namespace Lumpn.Threading
         private static IEnumerator ComputeSumAsyncImpl(int a, int b, SumCallback callback)
         {
             Log("Pretending long running computation");
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
 
             Log("Returning result via callback");
             int result = a + b;
