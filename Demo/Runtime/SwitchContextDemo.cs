@@ -1,4 +1,4 @@
-﻿//----------------------------------------
+//----------------------------------------
 // MIT License
 // Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
@@ -24,6 +24,9 @@ namespace Lumpn.Threading
             thread2 = ThreadUtils.StartWorkerThread("Demo", "Thread2", System.Threading.ThreadPriority.BelowNormal, 100);
             unity1 = ThreadUtils.StartUnityThread("Unity1", 100, this);
             unity2 = ThreadUtils.StartUnityThread("Unity2", 100, this);
+
+            // automatically start demo
+            StartSwitchContextCoroutine();
         }
 
         void OnDestroy()

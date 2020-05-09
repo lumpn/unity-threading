@@ -11,10 +11,17 @@ namespace Lumpn.Threading
     public sealed class CoroutineHost : MonoBehaviour
     {
         private static readonly UnityThread unityThread = new UnityThread("CoroutineHost", 64);
+        private static readonly List<CoroutineHost> instances = new List<CoroutineHost>();
 
         IEnumerator Start()
         {
+            instances.Add(this);
             return unityThread.Run();
+        }
+
+        void OnDestroy()
+        {
+            instances.Remove(this);
         }
 
         internal static void HandleYieldInstruction(YieldInstruction instruction, ISynchronizationContext context, CoroutineWrapper coroutineWrapper)
@@ -34,20 +41,38 @@ namespace Lumpn.Threading
                 Debug.LogErrorFormat("CoroutineHost is missing from scene. (instruction '{0}', context '{1}')", instruction, context);
             }
 
-
+            // TODO Jonas: use object pool for instruction wrappers
             var yieldWrapper = new YieldInstructionWrapper(instruction, context, coroutineWrapper);
-            unityThread.Post(HandleYieldInstructionImpl, yieldWrapper, null);
-            var host = instance;
-            if (!host)
-            {
-                return;
-            }
-
-            host.StartCoroutine(HandleYieldInstructionImpl(instruction, context, wrapper));
+            unityThread.Post(HandleYieldInstruction, instances, yieldWrapper);
         }
 
-        private static IEnumerator HandleYieldInstructionImpl(YieldInstruction instruction, ISynchronizationContext context, CoroutineWrapper wrapper)
-        { }
+        private static void HandleYieldInstruction(object owner, object state)
+        {
+            var hosts = (List<CoroutineHost>)owner;
+            var wrapper = (YieldInstructionWrapper)state;
 
+            var host = GetActiveHost(hosts);
+            if (!host)
+            {
+                // the fact that this method got called to begin with means that
+                // must be a coroutine host currently running it. it should have
+                // been in the list of hosts and active in hierarchy. not sure
+                // how we ended up here.
+                Debug.LogErrorFormat("Could not find active CoroutineHost. ('{0}')", wrapper);
+                return;
+            }
+        }
+
+        private static CoroutineHost GetActiveHost(List<CoroutineHost> hosts)
+        {
+            foreach (var host in hosts)
+            {
+                if (host && host.gameObject.activeInHierarchy)
+                {
+                    return host;
+                }
+            }
+            return null;
+        }
     }
 }

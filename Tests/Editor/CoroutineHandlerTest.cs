@@ -1,4 +1,4 @@
-﻿//----------------------------------------
+//----------------------------------------
 // MIT License
 // Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
@@ -15,6 +15,7 @@ namespace Lumpn.Threading
         {
             private readonly Queue<Task> tasks = new Queue<Task>();
 
+            public bool IsRunning { get { return true; } }
             public bool IsIdle { get { return QueueLength < 1; } }
             public int QueueLength { get { return tasks.Count; } }
             public ISynchronizationContext Context { get { return this; } }

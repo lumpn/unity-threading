@@ -42,7 +42,7 @@ namespace Lumpn.Threading
         private void ResumeCoroutine()
         {
             // resume coroutine on its original synchronization context
-            originalContext.Post(CoroutineWrapper.AdvanceCoroutine, coroutineWrapper, originalContext);
+            coroutineWrapper.ContinueOn(originalContext);
         }
     }
 

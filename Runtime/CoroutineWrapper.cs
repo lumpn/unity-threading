@@ -1,4 +1,4 @@
-﻿//----------------------------------------
+//----------------------------------------
 // MIT License
 // Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
@@ -16,12 +16,12 @@ namespace Lumpn.Threading
 
         public override bool keepWaiting { get { return stack.Count > 0; } }
 
-        public static CustomYieldInstruction StartCoroutine(ISynchronizationContext context, IEnumerator coroutine)
+        public static CoroutineWrapper StartCoroutine(ISynchronizationContext context, IEnumerator coroutine)
         {
             var wrapper = GetWrapper();
             wrapper.stack.Push(coroutine);
 
-            context.Post(AdvanceCoroutine, wrapper, context);
+            wrapper.ContinueOn(context);
             return wrapper;
         }
 
@@ -38,17 +38,24 @@ namespace Lumpn.Threading
         {
         }
 
-        internal static void AdvanceCoroutine(object owner, object state)
+        public void ContinueOn(ISynchronizationContext context)
+        {
+            context.Post(AdvanceCoroutine, this, context);
+        }
+
+        private static void AdvanceCoroutine(object owner, object state)
         {
             var wrapper = (CoroutineWrapper)owner;
             var context = (ISynchronizationContext)state;
 
             if (wrapper.AdvanceCoroutine(context))
             {
-                context.Post(AdvanceCoroutine, wrapper, context);
+                wrapper.ContinueOn(context);
             }
         }
 
+        /// <returns><c>true</c>, iff the coroutine should
+        /// continue running on the same context
         private bool AdvanceCoroutine(ISynchronizationContext context)
         {
             if (stack.Count < 1)
@@ -57,7 +64,7 @@ namespace Lumpn.Threading
                 {
                     pool.TryPut(this);
                 }
-                return false;
+                return false; // done
             }
 
             var iter = stack.Peek();
@@ -79,22 +86,22 @@ namespace Lumpn.Threading
             // handle switching context
             if (currentElement is ISynchronizationContext newContext)
             {
-                newContext.Post(AdvanceCoroutine, this, newContext);
-                return false;
+                ContinueOn(newContext);
+                return false; // continuing on new context instead
             }
 
             // handle awaiting callbacks
             if (currentElement is CallbackAwaiter awaiter)
             {
                 awaiter.Initialize(context, this);
-                return false;
+                return false; // awaiting callback instead
             }
 
             // handle yield instructions
             if (currentElement is YieldInstruction yieldInstruction)
             {
                 CoroutineHost.HandleYieldInstruction(yieldInstruction, context, this);
-                return false;
+                return false; // awaiting yield instruction instead
             }
 
             return true;
