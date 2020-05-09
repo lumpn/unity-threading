@@ -2,7 +2,7 @@
   "name": "de.lumpn.unity-threads",
   "version": "0.1.0",
   "displayName": "Lumpn Threading",
-  "description": "Non-allocating thread switching facilities for Unity. Coroutines that flow across thread contexts, like async/await but without all the GC alloc.",
+  "description": "Non-allocating async/await facilities for Unity. Coroutines that flow across threads, callbacks, and yield instructions.",
   "unity": "2017.1",
   "dependencies": {
     "com.unity.ext.nunit": "1.0.0"
