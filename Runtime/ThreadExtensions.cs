@@ -1,6 +1,6 @@
-//----------------------------------------
+﻿//----------------------------------------
 // MIT License
-// Copyright(c) 2019 Jonas Boetel
+// Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
 using System.Collections;
 using UnityEngine;
@@ -11,7 +11,7 @@ namespace Lumpn.Threading
     {
         public static CustomYieldInstruction StartCoroutine(this IThread thread, IEnumerator coroutine)
         {
-            return CoroutineHandler.StartCoroutine(thread, coroutine);
+            return CoroutineWrapper.StartCoroutine(thread, coroutine);
         }
     }
 }

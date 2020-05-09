@@ -1,6 +1,6 @@
-//----------------------------------------
+﻿//----------------------------------------
 // MIT License
-// Copyright(c) 2019 Jonas Boetel
+// Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
 using System.Collections.Generic;
 using System.Threading;
@@ -27,7 +27,7 @@ namespace Lumpn.Threading
             this.group = group;
             this.name = name;
             this.pendingTasks = new Queue<Task>(initialCapacity);
-            this.thread = new Thread(Main)
+            this.thread = new Thread(ThreadMain)
             {
                 Name = name,
                 IsBackground = true,
@@ -89,22 +89,23 @@ namespace Lumpn.Threading
 
         private void Run()
         {
+            Profiler.BeginThreadProfiling(group, name);
+
             Task task;
             while (TryDequeue(out task))
             {
                 task.Invoke();
             }
+
+            Profiler.EndThreadProfiling();
         }
 
-        private static void Main(object state)
+        private static void ThreadMain(object state)
         {
             try
             {
                 var worker = (WorkerThread)state;
-
-                Profiler.BeginThreadProfiling(worker.group, worker.name);
                 worker.Run();
-                Profiler.EndThreadProfiling();
             }
             catch (System.Exception ex)
             {

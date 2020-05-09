@@ -1,6 +1,6 @@
-//----------------------------------------
+﻿//----------------------------------------
 // MIT License
-// Copyright(c) 2019 Jonas Boetel
+// Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
 using System.Collections;
 using System.Collections.Generic;
@@ -8,40 +8,40 @@ using UnityEngine;
 
 namespace Lumpn.Threading
 {
-    public sealed class CoroutineHandler : CustomYieldInstruction
+    public sealed class CoroutineWrapper : CustomYieldInstruction
     {
-        private readonly static ObjectPool<CoroutineHandler> pool = new ObjectPool<CoroutineHandler>(100);
+        private readonly static ObjectPool<CoroutineWrapper> pool = new ObjectPool<CoroutineWrapper>(100);
 
         private readonly Stack<IEnumerator> stack = new Stack<IEnumerator>();
 
         public override bool keepWaiting { get { return stack.Count > 0; } }
 
-        public static CustomYieldInstruction StartCoroutine(IThread thread, IEnumerator coroutine)
+        public static CustomYieldInstruction StartCoroutine(ISynchronizationContext context, IEnumerator coroutine)
         {
             var handler = GetHandler();
             handler.stack.Push(coroutine);
 
-            thread.Post(AdvanceCoroutine, handler, thread);
+            context.Post(AdvanceCoroutine, handler, context);
             return handler;
         }
 
-        private static CoroutineHandler GetHandler()
+        private static CoroutineWrapper GetHandler()
         {
             lock (pool)
             {
-                CoroutineHandler handler;
+                CoroutineWrapper handler;
                 if (pool.TryGet(out handler)) return handler;
             }
-            return new CoroutineHandler();
+            return new CoroutineWrapper();
         }
 
-        private CoroutineHandler()
+        private CoroutineWrapper()
         {
         }
 
-        private static void AdvanceCoroutine(object owner, object state)
+        internal static void AdvanceCoroutine(object owner, object state)
         {
-            var handler = (CoroutineHandler)owner;
+            var handler = (CoroutineWrapper)owner;
             var context = (ISynchronizationContext)state;
 
             if (handler.AdvanceCoroutine(context))
@@ -84,12 +84,19 @@ namespace Lumpn.Threading
                 return false;
             }
 
+            // handle awaiting callbacks
+            if (currentElement is CallbackAwaiter awaiter)
+            {
+                awaiter.Initialize(context, this);
+                return false;
+            }
+
             // handle yield instructions
             if (currentElement is YieldInstruction yieldInstruction)
             {
                 // TODO Jonas: properly handle yield instructions on UnityThreads
                 // Perhaps handle yield instructions on WorkerThreads by implicitly switching contexts back and forth?
-                Debug.LogWarningFormat("CoroutineHandler on context {0} encountered yield instruction {1}", context, yieldInstruction);
+                Debug.LogWarningFormat("CoroutineWrapper on context {0} encountered yield instruction {1}", context, yieldInstruction);
                 return true; // ignore yield instruction and carry on for now
             }
 
