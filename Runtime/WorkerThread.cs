@@ -109,6 +109,10 @@ namespace Lumpn.Threading
                 var worker = (WorkerThread)state;
                 worker.Run();
             }
+            catch (ThreadAbortException)
+            {
+                UnityEngine.Debug.LogFormat("Aborting thread '{0}'", state);
+            }
             catch (System.Exception ex)
             {
                 UnityEngine.Debug.LogException(ex);

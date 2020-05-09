@@ -31,10 +31,10 @@ namespace Lumpn.Threading
 
         void OnDestroy()
         {
-            unity2.Stop();
-            unity1.Stop();
-            thread2.Stop();
-            thread1.Stop();
+            ThreadUtils.StopThread(unity2);
+            ThreadUtils.StopThread(unity1);
+            ThreadUtils.StopThread(thread2);
+            ThreadUtils.StopThread(thread1);
         }
 
         [ContextMenu("Start Coroutine")]
@@ -54,7 +54,7 @@ namespace Lumpn.Threading
             Log("Create GameObject");
 
             Log("Pretend waiting for GameObject");
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
             Log("Create GameObject done");
 
             Log("Switching to worker thread 2");
@@ -62,7 +62,7 @@ namespace Lumpn.Threading
             Log("Compute mesh");
 
             Log("Pretend waiting for mesh");
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
             Log("Compute mesh done");
 
             Log("Switching to Unity thread 2");

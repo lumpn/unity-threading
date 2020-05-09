@@ -1,4 +1,4 @@
-﻿//----------------------------------------
+//----------------------------------------
 // MIT License
 // Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
@@ -13,6 +13,8 @@ namespace Lumpn.Threading
         private static readonly UnityThread unityThread = new UnityThread("CoroutineHost", 64);
         private static readonly List<CoroutineHost> instances = new List<CoroutineHost>();
 
+        public int QueueLength { get { return unityThread.QueueLength; } }
+
         IEnumerator Start()
         {
             instances.Add(this);
@@ -26,6 +28,8 @@ namespace Lumpn.Threading
 
         internal static void HandleYieldInstruction(YieldInstruction instruction, ISynchronizationContext context, CoroutineWrapper coroutineWrapper)
         {
+            Debug.LogFormat("Handling yield instruction {0}, context {1}", instruction, context);
+
             if (!unityThread.IsRunning)
             {
                 // our Unity thread is not running, which means that no
@@ -43,11 +47,14 @@ namespace Lumpn.Threading
 
             // TODO Jonas: use object pool for instruction wrappers
             var yieldWrapper = new YieldInstructionWrapper(instruction, context, coroutineWrapper);
-            unityThread.Post(HandleYieldInstruction, instances, yieldWrapper);
+            Debug.LogFormat("Posting wrapper {0} to unity thread {1}", yieldWrapper, unityThread);
+            unityThread.Post(HandleYieldInstructionImpl, instances, yieldWrapper);
         }
 
-        private static void HandleYieldInstruction(object owner, object state)
+        private static void HandleYieldInstructionImpl(object owner, object state)
         {
+            Debug.LogFormat("HandleYieldInstructionImpl owner {0}, state {1}", owner, state);
+
             var hosts = (List<CoroutineHost>)owner;
             var wrapper = (YieldInstructionWrapper)state;
 
@@ -61,6 +68,9 @@ namespace Lumpn.Threading
                 Debug.LogErrorFormat("Could not find active CoroutineHost. ('{0}')", wrapper);
                 return;
             }
+
+            Debug.LogFormat("HandleYieldInstructionImpl starting coroutine {0} on host {1}", wrapper, host);
+            host.StartCoroutine(wrapper);
         }
 
         private static CoroutineHost GetActiveHost(List<CoroutineHost> hosts)

@@ -22,5 +22,13 @@ namespace Lumpn.Threading
             host.StartCoroutine(thread.Run());
             return thread;
         }
+
+        public static bool StopThread(IThread thread)
+        {
+            if (thread == null) return false;
+
+            thread.Stop();
+            return true;
+        }
     }
 }
