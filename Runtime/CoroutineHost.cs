@@ -43,12 +43,11 @@ namespace Lumpn.Threading
                 Debug.LogErrorFormat("CoroutineHost is missing from scene. (instruction '{0}', context '{1}')", instruction, context);
             }
 
-            // TODO Jonas: use object pool for instruction wrappers
-            var yieldWrapper = new YieldInstructionWrapper(instruction, context, coroutineWrapper);
-            unityThread.Post(HandleYieldInstructionImpl, instances, yieldWrapper);
+            var yieldWrapper = YieldInstructionWrapper.Create(instruction, context, coroutineWrapper);
+            unityThread.Post(HandleYieldInstruction, instances, yieldWrapper);
         }
 
-        private static void HandleYieldInstructionImpl(object owner, object state)
+        private static void HandleYieldInstruction(object owner, object state)
         {
             var hosts = (List<CoroutineHost>)owner;
             var wrapper = (YieldInstructionWrapper)state;

@@ -16,24 +16,6 @@ namespace Lumpn.Threading
 
         public override bool keepWaiting { get { return stack.Count > 0; } }
 
-        public static CoroutineWrapper StartCoroutine(ISynchronizationContext context, IEnumerator coroutine)
-        {
-            var wrapper = GetWrapper();
-            wrapper.stack.Push(coroutine);
-
-            wrapper.ContinueOn(context);
-            return wrapper;
-        }
-
-        private static CoroutineWrapper GetWrapper()
-        {
-            lock (pool)
-            {
-                if (pool.TryGet(out CoroutineWrapper wrapper)) return wrapper;
-            }
-            return new CoroutineWrapper();
-        }
-
         private CoroutineWrapper()
         {
         }
@@ -105,6 +87,24 @@ namespace Lumpn.Threading
             }
 
             return true;
+        }
+
+        public static CoroutineWrapper StartCoroutine(ISynchronizationContext context, IEnumerator coroutine)
+        {
+            var wrapper = GetWrapper();
+            wrapper.stack.Push(coroutine);
+
+            wrapper.ContinueOn(context);
+            return wrapper;
+        }
+
+        private static CoroutineWrapper GetWrapper()
+        {
+            lock (pool)
+            {
+                if (pool.TryGet(out CoroutineWrapper wrapper)) return wrapper;
+            }
+            return new CoroutineWrapper();
         }
     }
 }
