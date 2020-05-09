@@ -18,19 +18,19 @@ namespace Lumpn.Threading
 
         public static CustomYieldInstruction StartCoroutine(ISynchronizationContext context, IEnumerator coroutine)
         {
-            var handler = GetHandler();
-            handler.stack.Push(coroutine);
+            var wrapper = GetWrapper();
+            wrapper.stack.Push(coroutine);
 
-            context.Post(AdvanceCoroutine, handler, context);
-            return handler;
+            context.Post(AdvanceCoroutine, wrapper, context);
+            return wrapper;
         }
 
-        private static CoroutineWrapper GetHandler()
+        private static CoroutineWrapper GetWrapper()
         {
             lock (pool)
             {
-                CoroutineWrapper handler;
-                if (pool.TryGet(out handler)) return handler;
+                CoroutineWrapper wrapper;
+                if (pool.TryGet(out wrapper)) return wrapper;
             }
             return new CoroutineWrapper();
         }
@@ -41,12 +41,12 @@ namespace Lumpn.Threading
 
         internal static void AdvanceCoroutine(object owner, object state)
         {
-            var handler = (CoroutineWrapper)owner;
+            var wrapper = (CoroutineWrapper)owner;
             var context = (ISynchronizationContext)state;
 
-            if (handler.AdvanceCoroutine(context))
+            if (wrapper.AdvanceCoroutine(context))
             {
-                context.Post(AdvanceCoroutine, handler, context);
+                context.Post(AdvanceCoroutine, wrapper, context);
             }
         }
 
