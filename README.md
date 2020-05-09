@@ -5,6 +5,22 @@ Non-allocating async/await facilities for Unity. Coroutines that flow across thr
 Download the entire repository from https://github.com/lumpn/unity-threads and use Unity's built in package manager to [add package from disk](https://docs.unity3d.com/Manual/upm-ui-local.html).
 
 ## Usage
+```csharp
+    IEnumerator SaveAsync()
+    {
+        saveIcon.SetActive(true); // on Unity thread
+        
+        yield return ioThread.Context; // switch to I/O thread
+        File.WriteAllBytes("savegame.dat", data); // on I/O thread
+        
+        var awaiter = new CallbackAwaiter();
+        StorageAPI.WriteAsync("savegame", awaiter.Call);
+        yield return awaiter; // wait for callback
+        
+        yield return unityThread.Context; // switch back to Unity thread
+        saveIcon.SetActive(false); // on Unity thread
+    }
+```
 
 ### Context switching
 ```csharp
