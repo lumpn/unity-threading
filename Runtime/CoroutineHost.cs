@@ -21,11 +21,16 @@ namespace Lumpn.Threading
         {
             if (!unityThread.IsRunning)
             {
-                // failed to locate the coroutine host which must be present
-                // in the scene at this point. we might be on a thread here,
-                // and Unity does not allow creating game objects outside the
-                // main thread, therefore there's no way to create the coroutine
-                // host on the fly.
+                // our Unity thread is not running, which means that no
+                // coroutine host has been created in the scene. in theory
+                // you could add the host later and it would start working down
+                // the queue, but in practice it is almost certain, that the
+                // user didn't know they are supposed to put a coroutine host
+                // in the scene.
+                // there is no way to recover automatically, because we might
+                // be on a thread here and Unity does not allow creating game
+                // objects outside the main thread, therefore there's no way to
+                // create the coroutine host on the fly. -> inform the user
                 Debug.LogErrorFormat("CoroutineHost is missing from scene. (instruction '{0}', context '{1}')", instruction, context);
             }
 
