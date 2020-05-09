@@ -1,26 +1,90 @@
 # unity-threads
-Non-allocating thread switching facilities for Unity. Coroutines that flow across thread contexts, like async/await but without all the GC alloc.
+Non-allocating async/await facilities for Unity. Coroutines that flow across threads, callbacks, and yield instructions.
 
 ## Installation
-Download the entire repository from https://github.com/lumpn/unity-threads and put it into a subdirectory of your Unity project's *Asset* directory.
-For example `MyProject/Assets/Plugins/lumpn/unity-threads`.
+Download the entire repository from https://github.com/lumpn/unity-threads and use Unity's built in package manager to [add package from disk](https://docs.unity3d.com/Manual/upm-ui-local.html).
 
 ## Usage
-```csharp
-void Start()
-{
-    unityThread.StartCoroutine(SomeCoroutine());
-}
 
-IEnumerator SomeCoroutine()
+### Context switching
+```csharp
+class SaveGameManager : MonoBehaviour
 {
-    yield return workerThread.Context;
-    // on worker thread ...
+    IThread unityThread, ioThread;
     
-    yield return unityThread.Context;
-    // on main thread ...
+    void Start()
+    {
+        unityThread = ThreadUtils.StartUnityThread("SaveGameManager", 10, this);
+        ioThread = ThreadUtils.StartWorkerThread("Workers", "I/O", ThreadPriority.Normal, 10);        
+    }
+    
+    void OnDestroy()
+    {
+        ThreadUtils.StopThread(ioThread);
+        ThreadUtils.StopThread(unityThread);
+    }
+    
+    void Save()
+    {
+        unityThread.StartCoroutine(SaveAsync());
+    }
+    
+    IEnumerator SaveAsync()
+    {
+        saveIcon.SetActive(true); // on Unity thread
+        yield return ioThread.Context; // switch to I/O thread
+        
+        var data = GatherSaveData();
+        File.WriteAllBytes("savegame.dat", data); // on I/O thread
+        
+        yield return unityThread.Context; // switch back to Unity thread
+        saveIcon.SetActive(false); // on Unity thread
+    }
 }
 ```
 
-### Notes
+### Callback handling
+```csharp
+class SaveGameManager : MonoBehaviour
+{
+    IEnumerator LoadAsync(string fileName)
+    {
+        var awaiter = new CallbackAwaiter<ByteBuffer>();
+        StorageAPI.LoadBytesAsync(fileName, awaiter.Call);
+        yield return awaiter; // wait for callback
+        
+        var buffer = awaiter.arg;
+        RestoreSaveData(buffer);
+    }
+}
+
+### Yield instructions
+class SaveGameManager : MonoBehaviour
+{
+    IEnumerator RestoreOptionsAsync()
+    {
+        busyIndicator.SetActive(true);
+    
+        var bundleRequest = AssetBundle.LoadFromFileAsync("options");
+        yield return bundleRequest;
+        
+        var bundle = bundleRequest.bundle;
+        var assetRequest = bundle.LoadAssetAsync<TextAsset>("options.bytes");
+        yield return assetRequest;
+
+        var text = (TextAsset)assetRequest.asset;
+        var data = text.bytes;
+        
+        yield return ioThread.Context;
+        File.WriteAllBytes("options.dat", data); // on I/O thread
+        
+        // simulate really slow HDD
+        yield return new WaitForSeconds(5f); // on I/O thread
+        
+        yield return unityThread.Context;
+        busyIndicator.SetActive(false);
+    }
+}
+
+## Notes
 * See `SwitchContextDemo` for details.
