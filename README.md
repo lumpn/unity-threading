@@ -57,8 +57,10 @@ class SaveGameManager : MonoBehaviour
         RestoreSaveData(buffer);
     }
 }
+```
 
 ### Yield instructions
+```csharp
 class SaveGameManager : MonoBehaviour
 {
     IEnumerator RestoreOptionsAsync()
@@ -85,6 +87,7 @@ class SaveGameManager : MonoBehaviour
         busyIndicator.SetActive(false);
     }
 }
+```
 
 ## Notes
 * See `SwitchContextDemo` for details.
