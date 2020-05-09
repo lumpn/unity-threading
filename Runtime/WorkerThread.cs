@@ -15,9 +15,11 @@ namespace Lumpn.Threading
         private readonly Thread thread;
         private readonly Queue<Task> pendingTasks;
 
+        private bool started;
         private bool waiting;
         private bool canceled;
 
+        public bool IsRunning { get { return started && !canceled; } }
         public bool IsIdle { get { return waiting && QueueLength <= 0; } }
         public int QueueLength { get { { return pendingTasks.Count; } } }
         public ISynchronizationContext Context { get { return this; } }
@@ -91,8 +93,8 @@ namespace Lumpn.Threading
         {
             Profiler.BeginThreadProfiling(group, name);
 
-            Task task;
-            while (TryDequeue(out task))
+            started = true;
+            while (TryDequeue(out Task task))
             {
                 task.Invoke();
             }

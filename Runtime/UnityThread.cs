@@ -4,6 +4,7 @@
 //----------------------------------------
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Lumpn.Threading
 {
@@ -11,8 +12,10 @@ namespace Lumpn.Threading
     {
         private readonly Queue<Task> tasks;
         public readonly string name;
+        private bool started;
         private bool canceled;
 
+        public bool IsRunning { get { return started && !canceled; } }
         public bool IsIdle { get { return QueueLength <= 0; } }
         public int QueueLength { get { return tasks.Count; } }
         public ISynchronizationContext Context { get { return this; } }
@@ -21,6 +24,7 @@ namespace Lumpn.Threading
         {
             this.tasks = new Queue<Task>(initialCapacity);
             this.name = name;
+            this.started = false;
             this.canceled = false;
         }
 
@@ -28,14 +32,14 @@ namespace Lumpn.Threading
         {
             for (int i = 0; i < numTasks; i++)
             {
-                Task task;
-                if (!TryDequeue(out task)) return;
+                if (!TryDequeue(out Task task)) return;
                 task.Invoke();
             }
         }
 
         public IEnumerator Run()
         {
+            started = true;
             while (!canceled)
             {
                 int num;

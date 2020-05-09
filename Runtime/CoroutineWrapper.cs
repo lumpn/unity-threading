@@ -8,9 +8,9 @@ using UnityEngine;
 
 namespace Lumpn.Threading
 {
-    public sealed class CoroutineWrapper : CustomYieldInstruction
+    internal sealed class CoroutineWrapper : CustomYieldInstruction
     {
-        private readonly static ObjectPool<CoroutineWrapper> pool = new ObjectPool<CoroutineWrapper>(100);
+        private static readonly ObjectPool<CoroutineWrapper> pool = new ObjectPool<CoroutineWrapper>(100);
 
         private readonly Stack<IEnumerator> stack = new Stack<IEnumerator>();
 
@@ -29,8 +29,7 @@ namespace Lumpn.Threading
         {
             lock (pool)
             {
-                CoroutineWrapper wrapper;
-                if (pool.TryGet(out wrapper)) return wrapper;
+                if (pool.TryGet(out CoroutineWrapper wrapper)) return wrapper;
             }
             return new CoroutineWrapper();
         }
@@ -94,10 +93,8 @@ namespace Lumpn.Threading
             // handle yield instructions
             if (currentElement is YieldInstruction yieldInstruction)
             {
-                // TODO Jonas: properly handle yield instructions on UnityThreads
-                // Perhaps handle yield instructions on WorkerThreads by implicitly switching contexts back and forth?
-                Debug.LogWarningFormat("CoroutineWrapper on context {0} encountered yield instruction {1}", context, yieldInstruction);
-                return true; // ignore yield instruction and carry on for now
+                CoroutineHost.HandleYieldInstruction(yieldInstruction, context, this);
+                return false;
             }
 
             return true;
