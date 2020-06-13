@@ -1,4 +1,4 @@
-# unity-threads
+# unity-threading
 Non-allocating async/await facilities for Unity. Coroutines that flow across threads, callbacks, and yield instructions.
 
 ## Installation
