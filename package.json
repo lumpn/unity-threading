@@ -1,14 +1,18 @@
 {
-  "name": "de.lumpn.unity-threads",
-  "version": "0.1.0",
+  "name": "de.lumpn.unity-threading",
+  "version": "1.0.0",
   "displayName": "Lumpn Threading",
-  "description": "Non-allocating async/await facilities for Unity. Coroutines that flow across threads, callbacks, and yield instructions.",
+  "description": "Non-allocating async/await threading facilities. Coroutines that flow across threads, callbacks, and yield instructions.",
   "unity": "2017.1",
   "dependencies": {
     "com.unity.ext.nunit": "1.0.0"
   },
   "keywords": [
-    "thread"
+    "lumpn",
+    "thread",
+    "threading",
+    "async",
+    "await"
   ],
   "author": {
     "name": "Jonas Boetel",
