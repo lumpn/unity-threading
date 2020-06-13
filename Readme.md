@@ -2,7 +2,7 @@
 Non-allocating async/await facilities for Unity. Coroutines that flow across threads, callbacks, and yield instructions.
 
 ## Installation
-Download the entire repository from https://github.com/lumpn/unity-threads and use Unity's built in package manager to [add package from disk](https://docs.unity3d.com/Manual/upm-ui-local.html).
+Download the entire repository from https://github.com/lumpn/unity-threading and use Unity's built in package manager to [add package from disk](https://docs.unity3d.com/Manual/upm-ui-local.html).
 
 ## Usage
 ```csharp
