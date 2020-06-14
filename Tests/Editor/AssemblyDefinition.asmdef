@@ -1,5 +1,5 @@
 {
-    "name": "de.lumpn.threading.Tests",
+    "name": "de.lumpn.threading.Editor.Tests",
     "references": [
         "GUID:daffcfbc5d71a5a4eb88169476f7cdb6"
     ],

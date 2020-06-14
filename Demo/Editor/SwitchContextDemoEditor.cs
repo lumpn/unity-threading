@@ -5,7 +5,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Lumpn.Threading
+namespace Lumpn.Threading.Demo
 {
     [CustomEditor(typeof(SwitchContextDemo))]
     public class SwitchContextDemoEditor : Editor

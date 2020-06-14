@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace Lumpn.Threading
+namespace Lumpn.Threading.Tests
 {
     [TestFixture]
     public class CoroutineHandlerTest

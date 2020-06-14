@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Lumpn.Threading
 {
-    public sealed class ObjectPool<T> where T : class
+    internal sealed class ObjectPool<T> where T : class
     {
         private readonly Stack<T> pool;
 

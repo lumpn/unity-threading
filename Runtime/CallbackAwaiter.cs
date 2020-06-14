@@ -2,7 +2,6 @@
 // MIT License
 // Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
-using System.Collections;
 using System.Threading;
 
 namespace Lumpn.Threading
