@@ -1,11 +1,9 @@
 {
-    "name": "de.lumpn.unity-threads.Editor.Demo",
+    "name": "de.lumpn.threading.Demo",
     "references": [
-        "GUID:889ac3f1de30f854fbeaaa0687acfb6a"
+        "GUID:daffcfbc5d71a5a4eb88169476f7cdb6"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

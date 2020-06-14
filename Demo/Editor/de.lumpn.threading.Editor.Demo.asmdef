@@ -1,0 +1,17 @@
+{
+    "name": "de.lumpn.threading.Editor.Demo",
+    "references": [
+        "GUID:889ac3f1de30f854fbeaaa0687acfb6a"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
