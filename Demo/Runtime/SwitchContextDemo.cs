@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace Lumpn.Threading.Demo
 {
+    [AddComponentMenu("")]
     public class SwitchContextDemo : MonoBehaviour
     {
         private IThread thread1, thread2, unity1, unity2;
