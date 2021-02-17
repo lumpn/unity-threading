@@ -4,4 +4,4 @@
 //----------------------------------------
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("de.lumpn.threading.Editor.Tests")]
+[assembly: InternalsVisibleTo("Lumpn.Threading.Editor.Tests")]

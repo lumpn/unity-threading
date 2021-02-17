@@ -1,5 +1,6 @@
 {
-    "name": "de.lumpn.threading.Editor.Tests",
+    "name": "Lumpn.Threading.Editor.Tests",
+    "rootNamespace": "",
     "references": [
         "GUID:daffcfbc5d71a5a4eb88169476f7cdb6"
     ],

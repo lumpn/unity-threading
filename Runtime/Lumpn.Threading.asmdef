@@ -1,11 +1,8 @@
 {
-    "name": "de.lumpn.threading.Editor",
-    "references": [
-        "GUID:daffcfbc5d71a5a4eb88169476f7cdb6"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "name": "Lumpn.Threading",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

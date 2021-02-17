@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "displayName": "Lumpn Threading",
   "description": "Non-allocating async/await threading facilities. Coroutines that flow across threads, callbacks, and yield instructions.",
-  "unity": "2017.1",
   "dependencies": {
     "com.unity.ext.nunit": "1.0.0"
   },
