@@ -11,7 +11,9 @@ namespace Lumpn.Threading.Demo
     [AddComponentMenu("")]
     public class SwitchContextDemo : MonoBehaviour
     {
-        private IThread thread1, thread2, unity1, unity2;
+        [SerializeField] private CoroutineHost host;
+
+        private IThread worker1, worker2, unity1, unity2;
 
         void Start()
         {
@@ -21,8 +23,8 @@ namespace Lumpn.Threading.Demo
                 mainThread.Name = "Unity";
             }
 
-            thread1 = ThreadUtils.StartWorkerThread("Demo", "Thread1", System.Threading.ThreadPriority.BelowNormal, 100);
-            thread2 = ThreadUtils.StartWorkerThread("Demo", "Thread2", System.Threading.ThreadPriority.BelowNormal, 100);
+            worker1 = ThreadUtils.StartWorkerThread("Demo", "Thread1", System.Threading.ThreadPriority.BelowNormal, 100);
+            worker2 = ThreadUtils.StartWorkerThread("Demo", "Thread2", System.Threading.ThreadPriority.BelowNormal, 100);
             unity1 = ThreadUtils.StartUnityThread("Unity1", 100, this);
             unity2 = ThreadUtils.StartUnityThread("Unity2", 100, this);
 
@@ -34,20 +36,20 @@ namespace Lumpn.Threading.Demo
         {
             ThreadUtils.StopThread(unity2);
             ThreadUtils.StopThread(unity1);
-            ThreadUtils.StopThread(thread2);
-            ThreadUtils.StopThread(thread1);
+            ThreadUtils.StopThread(worker2);
+            ThreadUtils.StopThread(worker1);
         }
 
         [ContextMenu("Start Coroutine")]
         public void StartSwitchContextCoroutine()
         {
-            thread1.StartCoroutine(SwitchContext());
+            worker1.StartCoroutine(SwitchContext(), host);
         }
 
         IEnumerator SwitchContext()
         {
             Log("Switching to worker thread 1");
-            yield return thread1.Context;
+            yield return worker1.Context;
             Log("Read voxel data from file");
 
             Log("Switching to Unity thread 1");
@@ -55,15 +57,15 @@ namespace Lumpn.Threading.Demo
             Log("Create GameObject");
 
             Log("Pretend waiting for GameObject");
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             Log("Create GameObject done");
 
             Log("Switching to worker thread 2");
-            yield return thread2.Context;
+            yield return worker2.Context;
             Log("Compute mesh");
 
             Log("Pretend waiting for mesh");
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             Log("Compute mesh done");
 
             Log("Switching to Unity thread 2");
@@ -75,6 +77,22 @@ namespace Lumpn.Threading.Demo
             ComputeSumAsync(this, 1, 2, awaiter.Call);
             yield return awaiter;
             Log(string.Format("Sum computed: {0}", awaiter.arg1));
+
+            Log("Loading from Resources");
+            var request = Resources.LoadAsync<Material>("Material");
+
+            Log("Switching to worker thread 1");
+            yield return worker1.Context;
+
+            Log("Waiting for load to finish (implicit thread change)");
+            yield return request;
+            Log("Done waiting for load to finish (implicit thread change back)");
+
+            Log("Switching to Unity thread 1");
+            yield return unity1.Context;
+
+            Log("Accessing loaded asset");
+            Debug.Assert(request.asset, "Failed to load asset");
         }
 
         private delegate void SumCallback(int sum);

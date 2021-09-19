@@ -8,20 +8,14 @@ using UnityEngine;
 namespace Lumpn.Threading.Demo
 {
     [CustomEditor(typeof(SwitchContextDemo))]
-    public class SwitchContextDemoEditor : Editor
+    public sealed class SwitchContextDemoEditor : Editor<SwitchContextDemo>
     {
-        public override void OnInspectorGUI()
+        public override void OnInspectorGUI(SwitchContextDemo demo)
         {
-            base.OnInspectorGUI();
-
-            var demo = (SwitchContextDemo)target;
-
-            EditorGUILayout.BeginVertical(GUI.skin.box);
             if (GUILayout.Button("Start Coroutine"))
             {
                 demo.StartSwitchContextCoroutine();
             }
-            EditorGUILayout.EndVertical();
         }
     }
 }
