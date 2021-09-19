@@ -9,9 +9,9 @@ namespace Lumpn.Threading
 {
     public static class ThreadExtensions
     {
-        public static CustomYieldInstruction StartCoroutine(this IThread thread, IEnumerator coroutine)
+        public static CustomYieldInstruction StartCoroutine(this IThread thread, IEnumerator coroutine, CoroutineHost host)
         {
-            return CoroutineWrapper.StartCoroutine(thread, coroutine);
+            return CoroutineWrapper.StartCoroutine(host, thread, coroutine);
         }
     }
 }

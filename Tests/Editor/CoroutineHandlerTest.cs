@@ -3,41 +3,13 @@
 // Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace Lumpn.Threading.Tests
 {
     [TestFixture]
-    public class CoroutineHandlerTest
+    public sealed class CoroutineHandlerTest
     {
-        private sealed class ManualThread : IThread
-        {
-            private readonly Queue<Task> tasks = new Queue<Task>();
-
-            public bool IsRunning { get { return true; } }
-            public bool IsIdle { get { return QueueLength < 1; } }
-            public int QueueLength { get { return tasks.Count; } }
-            public ISynchronizationContext Context { get { return this; } }
-
-            public void Post(Callback callback, object owner, object state)
-            {
-                var task = new Task(callback, owner, state);
-                tasks.Enqueue(task);
-            }
-
-            public void Stop() { }
-
-            public bool Step()
-            {
-                if (tasks.Count < 1) return false;
-
-                var task = tasks.Dequeue();
-                task.Invoke();
-                return true;
-            }
-        }
-
         private int stepCounter = 0;
 
         [Test]
@@ -46,36 +18,36 @@ namespace Lumpn.Threading.Tests
             Assert.AreEqual(0, stepCounter);
 
             var thread = new ManualThread();
-            var wait = thread.StartCoroutine(Coroutine());
+            var coroutine = thread.StartCoroutine(Coroutine(), null);
 
             Assert.AreEqual(0, stepCounter);
-            Assert.IsTrue(wait.keepWaiting);
+            Assert.IsTrue(coroutine.keepWaiting);
 
             bool stepResult;
             stepResult = thread.Step();
             Assert.IsTrue(stepResult);
             Assert.AreEqual(1, stepCounter);
-            Assert.IsTrue(wait.keepWaiting);
+            Assert.IsTrue(coroutine.keepWaiting);
 
             stepResult = thread.Step();
             Assert.IsTrue(stepResult);
             Assert.AreEqual(2, stepCounter);
-            Assert.IsTrue(wait.keepWaiting);
+            Assert.IsTrue(coroutine.keepWaiting);
 
             stepResult = thread.Step();
             Assert.IsTrue(stepResult);
             Assert.AreEqual(3, stepCounter);
-            Assert.IsFalse(wait.keepWaiting);
+            Assert.IsFalse(coroutine.keepWaiting);
 
             stepResult = thread.Step();
             Assert.IsTrue(stepResult);
             Assert.AreEqual(3, stepCounter);
-            Assert.IsFalse(wait.keepWaiting);
+            Assert.IsFalse(coroutine.keepWaiting);
 
             stepResult = thread.Step();
             Assert.IsFalse(stepResult);
             Assert.AreEqual(3, stepCounter);
-            Assert.IsFalse(wait.keepWaiting);
+            Assert.IsFalse(coroutine.keepWaiting);
         }
 
         private IEnumerator Coroutine()

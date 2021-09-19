@@ -10,15 +10,12 @@ namespace Lumpn.Threading
 {
     internal sealed class CoroutineWrapper : CustomYieldInstruction
     {
-        private static readonly ObjectPool<CoroutineWrapper> pool = new ObjectPool<CoroutineWrapper>(100);
+        private static readonly Stack<CoroutineWrapper> pool = new Stack<CoroutineWrapper>(100);
 
         private readonly Stack<IEnumerator> stack = new Stack<IEnumerator>();
+        private CoroutineHost host;
 
         public override bool keepWaiting { get { return stack.Count > 0; } }
-
-        private CoroutineWrapper()
-        {
-        }
 
         public void ContinueOn(ISynchronizationContext context)
         {
@@ -36,16 +33,13 @@ namespace Lumpn.Threading
             }
         }
 
-        /// <returns><c>true</c>, iff the coroutine should
-        /// continue running on the same context
+        /// <summary>returns <c>true</c>, iff the coroutine should
+        /// continue running on the same context</summary>
         private bool AdvanceCoroutine(ISynchronizationContext context)
         {
             if (stack.Count < 1)
             {
-                lock (pool)
-                {
-                    pool.TryPut(this);
-                }
+                Return(this);
                 return false; // done
             }
 
@@ -73,7 +67,7 @@ namespace Lumpn.Threading
             }
 
             // handle awaiting callbacks
-            if (currentElement is CallbackAwaiter awaiter)
+            if (currentElement is CallbackAwaiterBase awaiter)
             {
                 awaiter.Initialize(context, this);
                 return false; // awaiting callback instead
@@ -82,29 +76,38 @@ namespace Lumpn.Threading
             // handle yield instructions
             if (currentElement is YieldInstruction yieldInstruction)
             {
-                CoroutineHost.HandleYieldInstruction(yieldInstruction, context, this);
+                host.Handle(yieldInstruction, context, this);
                 return false; // awaiting yield instruction instead
             }
 
             return true;
         }
 
-        public static CoroutineWrapper StartCoroutine(ISynchronizationContext context, IEnumerator coroutine)
+        public static CoroutineWrapper StartCoroutine(CoroutineHost host, ISynchronizationContext context, IEnumerator coroutine)
         {
-            var wrapper = GetWrapper();
+            var wrapper = Get();
+            wrapper.host = host;
+
             wrapper.stack.Push(coroutine);
 
             wrapper.ContinueOn(context);
             return wrapper;
         }
 
-        private static CoroutineWrapper GetWrapper()
+        private static CoroutineWrapper Get()
         {
             lock (pool)
             {
-                if (pool.TryGet(out CoroutineWrapper wrapper)) return wrapper;
+                return pool.PopOrNew();
             }
-            return new CoroutineWrapper();
+        }
+
+        private static void Return(CoroutineWrapper wrapper)
+        {
+            lock (pool)
+            {
+                pool.Push(wrapper);
+            }
         }
     }
 }

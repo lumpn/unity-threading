@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Lumpn.Threading
 {
-    public struct Task
+    internal struct Task
     {
         private readonly Callback callback;
         private readonly object owner;

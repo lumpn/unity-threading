@@ -2,6 +2,7 @@
 // MIT License
 // Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace Lumpn.Threading.Tests
@@ -12,13 +13,12 @@ namespace Lumpn.Threading.Tests
         [Test]
         public void TestPutSingle()
         {
-            var pool = new ObjectPool<object>(4);
+            var pool = new Stack<object>(4);
             var obj = new object();
-            bool putResult = pool.TryPut(obj);
-            Assert.IsTrue(putResult);
+            pool.Push(obj);
             Assert.AreEqual(1, pool.Count);
 
-            bool getResult = pool.TryGet(out object obj2);
+            bool getResult = pool.TryPop(out object obj2);
             Assert.IsTrue(getResult);
             Assert.AreSame(obj, obj2);
         }
@@ -26,28 +26,31 @@ namespace Lumpn.Threading.Tests
         [Test]
         public void TestPutMultiple()
         {
-            var pool = new ObjectPool<object>(4);
+            var pool = new Stack<object>(4);
 
             for (int i = 0; i < 4; i++)
             {
-                var putResult = pool.TryPut(new object());
-                Assert.IsTrue(putResult);
+                pool.Push(new object());
             }
             Assert.AreEqual(4, pool.Count);
 
             for (int i = 0; i < 4; i++)
             {
-                var getResult = pool.TryGet(out object obj);
+                var getResult = pool.TryPop(out object obj);
                 Assert.IsTrue(getResult);
                 Assert.IsNotNull(obj);
             }
             Assert.AreEqual(0, pool.Count);
+        }
 
-            {
-                var getResult = pool.TryGet(out object obj);
-                Assert.IsFalse(getResult);
-                Assert.IsNull(obj);
-            }
+        [Test]
+        public void TestGetEmpty()
+        {
+            var pool = new Stack<object>(4);
+
+            var getResult = pool.TryPop(out object obj);
+            Assert.IsFalse(getResult);
+            Assert.IsNull(obj);
         }
     }
 }

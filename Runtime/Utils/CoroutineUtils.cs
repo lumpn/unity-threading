@@ -4,7 +4,7 @@
 //----------------------------------------
 namespace Lumpn.Threading
 {
-    public static class CoroutineUtils
+    internal static class CoroutineUtils
     {
         public static readonly object waitForNextFrame = new object();
     }

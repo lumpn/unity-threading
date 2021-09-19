@@ -8,7 +8,7 @@ using UnityEngine.Profiling;
 
 namespace Lumpn.Threading
 {
-    public sealed class WorkerThread : IThread
+    internal sealed class WorkerThread : IThread
     {
         private readonly string group;
         private readonly string name;

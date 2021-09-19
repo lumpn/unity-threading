@@ -4,11 +4,10 @@
 //----------------------------------------
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Lumpn.Threading
 {
-    public sealed class UnityThread : IThread
+    internal sealed class UnityThread : IThread
     {
         private readonly Queue<Task> tasks;
         public readonly string name;

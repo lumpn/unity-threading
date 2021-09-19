@@ -3,22 +3,15 @@
 // Copyright(c) 2020 Jonas Boetel
 //----------------------------------------
 using UnityEditor;
-using UnityEngine;
 
 namespace Lumpn.Threading
 {
     [CustomEditor(typeof(CoroutineHost))]
-    public sealed class CoroutineHostEditor : Editor
+    public sealed class CoroutineHostEditor : Editor<CoroutineHost>
     {
-        public override void OnInspectorGUI()
+        public override void OnInspectorGUI(CoroutineHost host)
         {
-            base.OnInspectorGUI();
-
-            var host = (CoroutineHost)target;
-
-            EditorGUILayout.BeginVertical(GUI.skin.box);
             EditorGUILayout.IntField("Queue Length", host.QueueLength);
-            EditorGUILayout.EndVertical();
 
             Repaint();
         }
