@@ -1,6 +1,6 @@
 //----------------------------------------
 // MIT License
-// Copyright(c) 2020 Jonas Boetel
+// Copyright(c) 2019 Jonas Boetel
 //----------------------------------------
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace Lumpn.Threading.Tests
 {
     [TestFixture]
-    public sealed class ObjectPoolTest
+    public sealed class StackTest
     {
         [Test]
         public void TestPutSingle()

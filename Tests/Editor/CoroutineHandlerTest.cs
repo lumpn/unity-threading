@@ -1,6 +1,6 @@
 //----------------------------------------
 // MIT License
-// Copyright(c) 2020 Jonas Boetel
+// Copyright(c) 2019 Jonas Boetel
 //----------------------------------------
 using System.Collections;
 using NUnit.Framework;
