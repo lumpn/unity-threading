@@ -3,7 +3,6 @@
 // Copyright(c) 2019 Jonas Boetel
 //----------------------------------------
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -11,7 +10,7 @@ namespace Lumpn.Threading
 {
     internal sealed class YieldInstructionWrapper : IEnumerator
     {
-        private static readonly Stack<YieldInstructionWrapper> pool = new Stack<YieldInstructionWrapper>(100);
+        private static readonly Pool<YieldInstructionWrapper> pool = new Pool<YieldInstructionWrapper>(100);
 
         private YieldInstruction instruction;
         private ISynchronizationContext originalContext;
@@ -36,7 +35,7 @@ namespace Lumpn.Threading
             coroutineWrapper.ContinueOn(originalContext);
 
             // also our work is complete -> return to pool
-            Return(this);
+            pool.Return(this);
             return false;
         }
 
@@ -51,27 +50,11 @@ namespace Lumpn.Threading
 
         public static YieldInstructionWrapper Create(YieldInstruction instruction, ISynchronizationContext originalContext, CoroutineWrapper coroutineWrapper)
         {
-            var yieldWrapper = Get();
+            var yieldWrapper = pool.Get();
             yieldWrapper.instruction = instruction;
             yieldWrapper.originalContext = originalContext;
             yieldWrapper.coroutineWrapper = coroutineWrapper;
             return yieldWrapper;
-        }
-
-        private static YieldInstructionWrapper Get()
-        {
-            lock (pool)
-            {
-                return pool.PopOrNew();
-            }
-        }
-
-        private static void Return(YieldInstructionWrapper wrapper)
-        {
-            lock (pool)
-            {
-                pool.Push(wrapper);
-            }
         }
 
         private static void Log(object msg)

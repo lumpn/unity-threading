@@ -12,11 +12,11 @@ namespace Lumpn.Threading
     {
         private readonly UnityThread unityThread = new UnityThread(nameof(CoroutineHost), 10);
 
-        public int QueueLength { get { return unityThread.QueueLength; } }
+        public int queueLength { get { return unityThread.queueLength; } }
 
         IEnumerator Start()
         {
-            return unityThread.Run();
+            return unityThread.Start();
         }
 
         internal void Handle(YieldInstruction yieldInstruction, ISynchronizationContext context, CoroutineWrapper wrapper)
@@ -40,6 +40,5 @@ namespace Lumpn.Threading
             var thread = Thread.CurrentThread;
             Debug.LogFormat("Thread {0} ({1}): {2}", thread.ManagedThreadId, thread.Name, msg);
         }
-
     }
 }

@@ -12,25 +12,25 @@ namespace Lumpn.Threading.Tests
         private int counter = 0;
 
         [Test]
-        public void TestPost()
+        public void Post()
         {
             var thread = new UnityThread("Test", 10);
-            Assert.IsTrue(thread.IsIdle);
-            Assert.AreEqual(0, thread.QueueLength);
+            Assert.IsTrue(thread.isIdle);
+            Assert.AreEqual(0, thread.queueLength);
             Assert.AreEqual(0, counter);
 
             thread.Post(IncrementCounter, this, null);
             thread.Post(IncrementCounter, this, null);
             thread.Post(IncrementCounter, this, null);
-            Assert.IsFalse(thread.IsIdle);
-            Assert.AreEqual(3, thread.QueueLength);
+            Assert.IsFalse(thread.isIdle);
+            Assert.AreEqual(3, thread.queueLength);
             Assert.AreEqual(0, counter);
 
-            var pump = thread.Run();
-            while (!thread.IsIdle) pump.MoveNext();
+            var pump = thread.Start();
+            while (!thread.isIdle) pump.MoveNext();
 
-            Assert.IsTrue(thread.IsIdle);
-            Assert.AreEqual(0, thread.QueueLength);
+            Assert.IsTrue(thread.isIdle);
+            Assert.AreEqual(0, thread.queueLength);
             Assert.AreEqual(3, counter);
 
             thread.Stop();

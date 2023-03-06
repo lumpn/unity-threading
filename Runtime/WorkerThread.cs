@@ -19,10 +19,10 @@ namespace Lumpn.Threading
         private bool waiting;
         private bool canceled;
 
-        public bool IsRunning { get { return started && !canceled; } }
-        public bool IsIdle { get { return waiting && QueueLength <= 0; } }
-        public int QueueLength { get { { return pendingTasks.Count; } } }
-        public ISynchronizationContext Context { get { return this; } }
+        public bool isRunning { get { return started && !canceled; } }
+        public bool isIdle { get { return waiting && pendingTasks.Count <= 0; } }
+        public int queueLength { get { { return pendingTasks.Count; } } }
+        public ISynchronizationContext context { get { return this; } }
 
         public WorkerThread(string group, string name, ThreadPriority priority, int initialCapacity)
         {
@@ -33,7 +33,7 @@ namespace Lumpn.Threading
             {
                 Name = name,
                 IsBackground = true,
-                Priority = priority
+                Priority = priority,
             };
         }
 
@@ -62,6 +62,11 @@ namespace Lumpn.Threading
             }
         }
 
+        public override string ToString()
+        {
+            return string.Format("{0}: {1}", group, name);
+        }
+
         private bool TryDequeue(out Task task)
         {
             lock (pendingTasks)
@@ -84,22 +89,21 @@ namespace Lumpn.Threading
             return false;
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0}: {1}", group, name);
-        }
-
         private void Run()
         {
             Profiler.BeginThreadProfiling(group, name);
-
-            started = true;
-            while (TryDequeue(out Task task))
+            try
             {
-                task.Invoke();
+                started = true;
+                while (TryDequeue(out Task task))
+                {
+                    task.Invoke();
+                }
             }
-
-            Profiler.EndThreadProfiling();
+            finally
+            {
+                Profiler.EndThreadProfiling();
+            }
         }
 
         private static void ThreadMain(object state)

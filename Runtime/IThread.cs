@@ -6,10 +6,10 @@ namespace Lumpn.Threading
 {
     public interface IThread : ISynchronizationContext
     {
-        bool IsRunning { get; }
-        bool IsIdle { get; }
-        int QueueLength { get; }
-        ISynchronizationContext Context { get; }
+        bool isRunning { get; }
+        bool isIdle { get; }
+        int queueLength { get; }
+        ISynchronizationContext context { get; }
 
         void Stop();
     }

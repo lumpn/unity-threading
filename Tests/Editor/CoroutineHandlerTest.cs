@@ -13,7 +13,7 @@ namespace Lumpn.Threading.Tests
         private int stepCounter = 0;
 
         [Test]
-        public void TestAdvanceCoroutine()
+        public void AdvanceCoroutine()
         {
             Assert.AreEqual(0, stepCounter);
 
@@ -23,29 +23,29 @@ namespace Lumpn.Threading.Tests
             Assert.AreEqual(0, stepCounter);
             Assert.IsTrue(coroutine.keepWaiting);
 
-            bool stepResult;
-            stepResult = thread.Step();
-            Assert.IsTrue(stepResult);
+            bool success;
+            success = thread.Step();
+            Assert.IsTrue(success);
             Assert.AreEqual(1, stepCounter);
             Assert.IsTrue(coroutine.keepWaiting);
 
-            stepResult = thread.Step();
-            Assert.IsTrue(stepResult);
+            success = thread.Step();
+            Assert.IsTrue(success);
             Assert.AreEqual(2, stepCounter);
             Assert.IsTrue(coroutine.keepWaiting);
 
-            stepResult = thread.Step();
-            Assert.IsTrue(stepResult);
+            success = thread.Step();
+            Assert.IsTrue(success);
             Assert.AreEqual(3, stepCounter);
             Assert.IsFalse(coroutine.keepWaiting);
 
-            stepResult = thread.Step();
-            Assert.IsTrue(stepResult);
+            success = thread.Step();
+            Assert.IsTrue(success);
             Assert.AreEqual(3, stepCounter);
             Assert.IsFalse(coroutine.keepWaiting);
 
-            stepResult = thread.Step();
-            Assert.IsFalse(stepResult);
+            success = thread.Step();
+            Assert.IsFalse(success);
             Assert.AreEqual(3, stepCounter);
             Assert.IsFalse(coroutine.keepWaiting);
         }

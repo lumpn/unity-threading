@@ -12,7 +12,7 @@ namespace Lumpn.Threading.Tests
         private int counter = 0;
 
         [Test]
-        public void TestExecute()
+        public void Invoke()
         {
             var task = new Task(IncrementCounter, this, null);
             Assert.AreEqual(0, counter);

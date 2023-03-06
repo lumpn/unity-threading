@@ -6,16 +6,15 @@ using System.Collections;
 using System.Threading;
 using UnityEngine;
 
-namespace Lumpn.Threading.Demo
+namespace Lumpn.Threading.Samples
 {
-    [AddComponentMenu("")]
-    public class SwitchContextDemo : MonoBehaviour
+    public sealed class SwitchContextDemo : MonoBehaviour
     {
         [SerializeField] private CoroutineHost host;
 
         private IThread worker1, worker2, unity1, unity2;
 
-        void Start()
+        protected void Start()
         {
             var mainThread = Thread.CurrentThread;
             if (mainThread.Name != "Unity")
@@ -32,7 +31,7 @@ namespace Lumpn.Threading.Demo
             StartSwitchContextCoroutine();
         }
 
-        void OnDestroy()
+        protected void OnDestroy()
         {
             ThreadUtils.StopThread(unity2);
             ThreadUtils.StopThread(unity1);
@@ -49,11 +48,11 @@ namespace Lumpn.Threading.Demo
         IEnumerator SwitchContext()
         {
             Log("Switching to worker thread 1");
-            yield return worker1.Context;
+            yield return worker1.context;
             Log("Read voxel data from file");
 
             Log("Switching to Unity thread 1");
-            yield return unity1.Context;
+            yield return unity1.context;
             Log("Create GameObject");
 
             Log("Pretend waiting for GameObject");
@@ -61,7 +60,7 @@ namespace Lumpn.Threading.Demo
             Log("Create GameObject done");
 
             Log("Switching to worker thread 2");
-            yield return worker2.Context;
+            yield return worker2.context;
             Log("Compute mesh");
 
             Log("Pretend waiting for mesh");
@@ -69,7 +68,7 @@ namespace Lumpn.Threading.Demo
             Log("Compute mesh done");
 
             Log("Switching to Unity thread 2");
-            yield return unity2.Context;
+            yield return unity2.context;
             Log("Upload mesh");
 
             Log("Compute sum");
@@ -82,14 +81,14 @@ namespace Lumpn.Threading.Demo
             var request = Resources.LoadAsync<Material>("Material");
 
             Log("Switching to worker thread 1");
-            yield return worker1.Context;
+            yield return worker1.context;
 
             Log("Waiting for load to finish (implicit thread change)");
             yield return request;
             Log("Done waiting for load to finish (implicit thread change back)");
 
             Log("Switching to Unity thread 1");
-            yield return unity1.Context;
+            yield return unity1.context;
 
             Log("Accessing loaded asset");
             Debug.Assert(request.asset, "Failed to load asset");

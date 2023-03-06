@@ -10,7 +10,7 @@ namespace Lumpn.Threading
 {
     internal sealed class CoroutineWrapper : CustomYieldInstruction
     {
-        private static readonly Stack<CoroutineWrapper> pool = new Stack<CoroutineWrapper>(100);
+        private static readonly Pool<CoroutineWrapper> pool = new Pool<CoroutineWrapper>(100);
 
         private readonly Stack<IEnumerator> stack = new Stack<IEnumerator>();
         private CoroutineHost host;
@@ -39,7 +39,7 @@ namespace Lumpn.Threading
         {
             if (stack.Count < 1)
             {
-                Return(this);
+                pool.Return(this);
                 return false; // done
             }
 
@@ -85,29 +85,11 @@ namespace Lumpn.Threading
 
         public static CoroutineWrapper StartCoroutine(CoroutineHost host, ISynchronizationContext context, IEnumerator coroutine)
         {
-            var wrapper = Get();
+            var wrapper = pool.Get();
             wrapper.host = host;
-
             wrapper.stack.Push(coroutine);
-
             wrapper.ContinueOn(context);
             return wrapper;
-        }
-
-        private static CoroutineWrapper Get()
-        {
-            lock (pool)
-            {
-                return pool.PopOrNew();
-            }
-        }
-
-        private static void Return(CoroutineWrapper wrapper)
-        {
-            lock (pool)
-            {
-                pool.Push(wrapper);
-            }
         }
     }
 }

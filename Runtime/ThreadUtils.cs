@@ -19,7 +19,7 @@ namespace Lumpn.Threading
         public static IThread StartUnityThread(string name, int initialCapacity, MonoBehaviour host)
         {
             var thread = new UnityThread(name, initialCapacity);
-            host.StartCoroutine(thread.Run());
+            host.StartCoroutine(thread.Start());
             return thread;
         }
 

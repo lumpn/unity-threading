@@ -11,20 +11,20 @@ namespace Lumpn.Threading.Tests
     public sealed class StackTest
     {
         [Test]
-        public void TestPutSingle()
+        public void PushSingle()
         {
             var pool = new Stack<object>(4);
             var obj = new object();
             pool.Push(obj);
             Assert.AreEqual(1, pool.Count);
 
-            bool getResult = pool.TryPop(out object obj2);
-            Assert.IsTrue(getResult);
+            bool success = pool.TryPop(out object obj2);
+            Assert.IsTrue(success);
             Assert.AreSame(obj, obj2);
         }
 
         [Test]
-        public void TestPutMultiple()
+        public void PushMultiple()
         {
             var pool = new Stack<object>(4);
 
@@ -36,20 +36,20 @@ namespace Lumpn.Threading.Tests
 
             for (int i = 0; i < 4; i++)
             {
-                var getResult = pool.TryPop(out object obj);
-                Assert.IsTrue(getResult);
+                var success = pool.TryPop(out object obj);
+                Assert.IsTrue(success);
                 Assert.IsNotNull(obj);
             }
             Assert.AreEqual(0, pool.Count);
         }
 
         [Test]
-        public void TestGetEmpty()
+        public void PopEmpty()
         {
             var pool = new Stack<object>(4);
 
-            var getResult = pool.TryPop(out object obj);
-            Assert.IsFalse(getResult);
+            var success = pool.TryPop(out object obj);
+            Assert.IsFalse(success);
             Assert.IsNull(obj);
         }
     }

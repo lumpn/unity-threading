@@ -11,7 +11,7 @@ namespace Lumpn.Threading
     {
         public override void OnInspectorGUI(CoroutineHost host)
         {
-            EditorGUILayout.IntField("Queue Length", host.QueueLength);
+            EditorGUILayout.IntField("Queue Length", host.queueLength);
 
             Repaint();
         }

@@ -1,6 +1,6 @@
 {
   "name": "de.lumpn.unity-threading",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "Lumpn Threading",
   "description": "Non-allocating async/await threading facilities. Coroutines that flow across threads, callbacks, and yield instructions.",
   "dependencies": {
@@ -16,5 +16,11 @@
   "author": {
     "name": "Jonas Boetel",
     "url": "https://github.com/lumpn"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Context Switching Samples",
+      "path": "Samples~/ContextSwitchingSamples"
+    }
+  ]
 }
